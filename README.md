@@ -9,15 +9,15 @@
 	
 ## **QUESTION**
 
-- [ ] 1.) Create a folder named files then download and store input.txt in it.
+- [x] 1.) Create a folder named files then download and store input.txt in it.
 
-- [ ] 2.) Ask the user for the input file name (use exceptions to deal with a missing file).
+- [x] 2.) Ask the user for the input file name (use exceptions to deal with a missing file).
 
-- [ ] 3.) Once the right file name is provided, create an output file named output.csv.
+- [x] 3.) Once the right file name is provided, create an output file named output.csv.
 
-  - [ ] a.) This file should also be stored in the files folder.
+  - [x] a.) This file should also be stored in the files folder.
 
-  - [ ] b.) Please note, before you store output.csv in the files folder, you need to check if there already exists a file with that name in the folder. Use the os.path module (not exception handling) to check if the file already exists. If it does, ask the user if they want to overwrite it or if they would prefer creating a different output file (refer to sample output for the logic). 
+  - [x] b.) Please note, before you store output.csv in the files folder, you need to check if there already exists a file with that name in the folder. Use the os.path module (not exception handling) to check if the file already exists. If it does, ask the user if they want to overwrite it or if they would prefer creating a different output file (refer to sample output for the logic). 
 		
       * Regarding the os module, the code below is enough to get you started.
     
@@ -27,7 +27,7 @@
 
 	* Here isfile('"Presidents.txt") returns True if the file Presidents.txt exists in the current directory.
 	
-  - [ ] c.) If no file exists with the name output.csv, anew file with that name should be created. If the file already exists, ask the user if they want to overwrite it. If they select y for yes, you can use thew file mode to overwrite the file. If they select n for no, ask them for anew output file name. 
+  - [x] c.) If no file exists with the name output.csv, anew file with that name should be created. If the file already exists, ask the user if they want to overwrite it. If they select y for yes, you can use thew file mode to overwrite the file. If they select n for no, ask them for anew output file name. 
 	
 - [ ] 4.) c. Once the output.csv file is successfully created, create a header row in it with the headers: Email, Time, and Confidence.
 
