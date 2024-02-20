@@ -56,19 +56,19 @@
 
 	* (please note the last row contains the average X-DSPAM-Confidence).
 
-- [ ] 8.) Once all the data is sent to output.csv, print Data stored! to the console to let users know your program is done.
+- [x] 8.) Once all the data is sent to output.csv, print Data stored! to the console to let users know your program is done.
 
 ## Please note:
 
-- [ ] 9.)  Write your program asa script (i.e., include the if__name block).
+- [x] 9.)  Write your program asa script (i.e., include the if__name block).
 	
-- [ ] 10.) Strip input when getting the file name (do not lower). There are some OS systems that are case sensitive with file names so make sure you don’t change the case of the file name entered (only strip file name input).
+- [x] 10.) Strip input when getting the file name (do not lower). There are some OS systems that are case sensitive with file names so make sure you don’t change the case of the file name entered (only strip file name input).
 
-- [ ] 11.) Your program should be able to work ifthe input and output file names were different.
+- [x] 11.) Your program should be able to work if the input and output file names were different.
 
-- [ ] 12.) Don’t forget to close any files you open.
+- [x] 12.) Don’t forget to close any files you open.
 
-- [ ] 13.) Feel free to use functions to organize your code.
+- [x] 13.) Feel free to use functions to organize your code.
 	
 	
 #### SAMPLE OUTPUT1
