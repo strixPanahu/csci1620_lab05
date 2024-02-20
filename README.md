@@ -110,4 +110,4 @@ folder so this is the first time it’s being created.
 > New output file name: test.csv  
 > Data stored!  
 
-* NOTE: The assumption in this scenario is that you already hada file named output.csv in your files folder and are choosing to send your data to a new csv file named test.csv because you don’t want to overwrite your output.csv file.
+* NOTE: The assumption in this scenario is that you already had a file named output.csv in your files folder and are choosing to send your data to a new csv file named test.csv because you don’t want to overwrite your output.csv file.

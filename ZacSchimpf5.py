@@ -200,7 +200,6 @@ def get_output_name(target_dir):
     return target_dir + output_name
 
 
-
 def has_illegal_chars(file_name):
     illegal_chars = ['/', '<', '>', ':', '\"', '\\', '|', '?', '*']
     for current_char in illegal_chars:
@@ -214,46 +213,6 @@ def name_too_long(file_name):
         return True
     else:
         return False
-
-
-"""
-def get_output_name(target_dir):
-    choice = 'n'
-    output_name = input("Output file name: ")
-
-    while path.exists(target_dir + output_name) and choice.casefold() == 'n':
-        if choice.casefold() not in ['y', 'n']:
-            print("Invalid choice of \"" + choice.casefold() + "\"; please try again.")
-            return get_output_name(target_dir)
-        elif path.exists(target_dir + output_name):
-            choice = input("Output file, \"" + output_name + "\", already exists; overwrite file? (y/n): ").strip()
-    return validate_output_name(target_dir, output_name)
-
-
-def validate_output_name(target_dir, output_name):
-    if len(output_name) > 255:
-        print("File name is too long; please try again.")
-        return validate_output_name(target_dir)
-
-    elif has_illegal_chars(output_name):
-        print("File name has forbidden characters; please try again.")
-        return validate_output_name(target_dir)
-
-    elif path.exists(target_dir + output_name):  # reset new output_name file exists
-        return get_output_name(target_dir)
-
-    else:  # break validation loop
-        return output_name
-
-
-def has_illegal_chars(file_name):
-    illegal_chars = ['/', '<', '>', ':', '\"', '\\', '|', '?', '*']
-    for current_char in illegal_chars:
-        if current_char in file_name:
-            return True
-    return False
-"""
-
 
 def eof():
     print("Data stored!")
