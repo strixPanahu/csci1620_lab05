@@ -29,9 +29,9 @@
 	
   - [x] c.) If no file exists with the name output.csv, anew file with that name should be created. If the file already exists, ask the user if they want to overwrite it. If they select y for yes, you can use thew file mode to overwrite the file. If they select n for no, ask them for anew output file name. 
 	
-- [ ] 4.) c. Once the output.csv file is successfully created, create a header row in it with the headers: Email, Time, and Confidence.
+- [x] 4.) Once the output.csv file is successfully created, create a header row in it with the headers: Email, Time, and Confidence.
 
-- [ ] 5.) Go through the lines in input.txt looking for lines that begin with (please note the  colons are part of the text)
+- [x] 5.) Go through the lines in input.txt looking for lines that begin with (please note the  colons are part of the text)
 
   > source@collab.sakaiproject.org  
   > From: stephen.marquard@uct.ac.za  
@@ -44,16 +44,15 @@
   > X-DSPAM-Confidence: @.8475  
   > X-DSPAM-Probability: @.e000  
 	
-  - [ ] a.) From: - Extract the email address (e.g., stephen.marquard@uct.ac.za)
+  - [x] a.) From: - Extract the email address (e.g., stephen.marquard@uct.ac.za)
 
-  - [ ] b.) X-DSPAM-Processed: - Extract the time value (e.g., 09:14:16)
+  - [x] b.) X-DSPAM-Processed: - Extract the time value (e.g., 09:14:16)
 
-  - [ ] c.) X-DSPAM-Confidence: - Extract the numeric value (e.g., 0.8475)
+  - [x] c.) X-DSPAM-Confidence: - Extract the numeric value (e.g., 0.8475)
 	
-- [ ] 6.) Send the results obtained in (d) to output.csv for each occurrence ofthe 3 items in
-input.txt.
+- [x] 6.) Send the results obtained in (d) to output.csv for each occurrence of the 3 items in input.txt.
 
-- [ ] 7.) The contents ofyour output.csv file should be identical to sample.csv when your program is done
+- [x] 7.) The contents of your output.csv file should be identical to sample.csv when your program is done
 
 	* (please note the last row contains the average X-DSPAM-Confidence).
 
