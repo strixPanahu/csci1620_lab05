@@ -1,7 +1,7 @@
 """
     CSCI 1620 001/851
     Professor Owora
-    Week 04 - Lab 04
+    Week 05 - Lab 05
     19/02/2024
 
     https://github.com/strixPanahu/csci1620_lab05
@@ -16,6 +16,10 @@ from sys import exit
 
 
 def main():
+    """
+    Primary logic flow; cli-callable function
+    :return: None
+    """
     target_dir = get_target_dir()
 
     raw_input = read_txt(get_input_name(target_dir))
@@ -59,6 +63,16 @@ def read_txt(inbound_name):
         exit("Invalid request for file_name \"" + inbound_name + "\" at \"" + getcwd() + "\"")
 
     return lines
+
+
+def get_input_name(target_dir):
+    input_name = input("Input file name: ").strip()
+
+    if path.exists(target_dir + input_name):
+        return input_name
+    else:
+        print("File does not exist!")
+        return get_input_name(target_dir)
 
 
 def convert_raw_to_dict(raw_input):
@@ -172,16 +186,6 @@ def output_to_csv(emails_dict, outbound_name):
         outbound_file.close()
 
 
-def get_input_name(target_dir):
-    input_name = input("Input file name: ").strip()
-    try:
-        open(target_dir + input_name)
-    except FileNotFoundError:
-        print("File does not exist!")
-        return get_input_name(target_dir)
-    return input_name
-
-
 def get_output_name(target_dir):
     output_name = input("Output file name: ")
 
@@ -213,6 +217,7 @@ def name_too_long(file_name):
         return True
     else:
         return False
+
 
 def eof():
     print("Data stored!")
