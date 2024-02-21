@@ -20,17 +20,22 @@ def main():
     Primary logic flow; cli-callable function
     :return: None
     """
-    target_dir = get_target_dir()
 
+    target_dir = get_target_dir()
     raw_input = read_txt(get_input_name(target_dir))
     emails_dict = convert_raw_to_dict(raw_input)
-
     output_to_csv(emails_dict, get_output_name(target_dir))
 
     eof()
 
 
 def get_target_dir():
+    """
+    Changes working directory & returns subdirectory "files";
+    Explicit subdirectory used to avoid char conflicts between envs
+    :return: String containing file explicit subdirectory
+    """
+
     target_dir = None
     try:
         match name:
@@ -52,6 +57,7 @@ def get_target_dir():
 def read_txt(inbound_name):
     """
     Reads working directory "input.txt"
+    :param inbound_name String of file path
     :return: A list[] containing each newline separated string
     """
 
@@ -66,6 +72,11 @@ def read_txt(inbound_name):
 
 
 def get_input_name(target_dir):
+    """
+    Cli prompt for inbound data file name
+    :param target_dir: Explicit working directory as a String
+    :return: Input file name as a String
+    """
     input_name = input("Input file name: ").strip()
 
     if path.exists(target_dir + input_name):
@@ -79,8 +90,9 @@ def convert_raw_to_dict(raw_input):
     """
     Clean list[] of email logs to contain only sender & timestamp
     :param raw_input A list[] of the input file's lines
-    :return List{Email, Day, Date, Month, Year, Time}
+    :return [{Email: , Time: , Confidence: }, {etc: }]
     """
+
     emails_dict = []
     sender = None
     timestamp_dt = None
@@ -146,6 +158,7 @@ def convert_list_to_datetime(timestamp):
     :param timestamp: A list of a split() timestamp; e.g. ["Sun", "Jan", "1", "12:00:00", "1999"]"
     :return Datetime object containing the converted timestamp
     """
+
     months_format = (None, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
     try:
@@ -187,6 +200,12 @@ def output_to_csv(emails_dict, outbound_name):
 
 
 def get_output_name(target_dir):
+    """
+    Cli prompt for outbound data file name
+    :param target_dir: Explicit working directory as a String
+    :return: Output file name as a String
+    """
+
     output_name = input("Output file name: ")
 
     if has_illegal_chars(output_name) or name_too_long(output_name):
@@ -205,6 +224,12 @@ def get_output_name(target_dir):
 
 
 def has_illegal_chars(file_name):
+    """
+    Validate file name string does include illegal NT chars
+    :param file_name: File name as a String
+    :return: True if illegal chars have made a presence
+    """
+
     illegal_chars = ['/', '<', '>', ':', '\"', '\\', '|', '?', '*']
     for current_char in illegal_chars:
         if current_char in file_name:
@@ -213,6 +238,12 @@ def has_illegal_chars(file_name):
 
 
 def name_too_long(file_name):
+    """
+    Validate file name string exceeds standard NT limit
+    :param file_name: File name as a String
+    :return: True if file name is in fact, too long
+    """
+
     if len(file_name) > 255:
         return True
     else:
@@ -220,6 +251,11 @@ def name_too_long(file_name):
 
 
 def eof():
+    """
+    End of script actions
+    :return: None
+    """
+
     print("Data stored!")
 
 
