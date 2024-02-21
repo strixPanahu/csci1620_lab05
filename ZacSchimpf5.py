@@ -196,6 +196,7 @@ def output_to_csv(emails_dict, outbound_name):
         writer = DictWriter(outbound_file, fieldnames=header, delimiter=',')
         writer.writeheader()
         writer.writerows(emails_dict)
+        writer.writerow({"Time": "Average", "Confidence": get_average(emails_dict)})
         outbound_file.close()
 
 
@@ -248,6 +249,13 @@ def name_too_long(file_name):
         return True
     else:
         return False
+
+
+def get_average(emails_dict):
+    total = 0
+    for message in emails_dict:
+        total += message.get("Confidence")
+    return round(total / len(emails_dict), 4)
 
 
 def eof():

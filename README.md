@@ -54,7 +54,7 @@
 
 - [x] 7.) The contents of your output.csv file should be identical to sample.csv when your program is done
 
-	* (please note the last row contains the average X-DSPAM-Confidence).
+  - [x] a.) Please note the last row contains the average X-DSPAM-Confidence).
 
 - [x] 8.) Once all the data is sent to output.csv, print Data stored! to the console to let users know your program is done.
 
