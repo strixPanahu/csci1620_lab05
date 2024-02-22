@@ -21,6 +21,7 @@ def main():
     """
 
     set_working_dir()
+
     raw_input = read_txt(get_input_name())
     emails_dict = convert_raw_to_dict(raw_input)
     output_to_csv(emails_dict, get_output_name())
