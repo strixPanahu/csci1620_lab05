@@ -7,12 +7,11 @@
     https://github.com/strixPanahu/csci1620_lab05
 """
 
-
 from csv import DictWriter
 from datetime import datetime
 from os import chdir, getcwd, makedirs, name, path
 from re import search
-from sys import exit
+from warnings import warn
 
 
 def main():
@@ -21,37 +20,32 @@ def main():
     :return: None
     """
 
-    target_dir = get_target_dir()
-    raw_input = read_txt(get_input_name(target_dir))
+    set_working_dir()
+    raw_input = read_txt(get_input_name())
     emails_dict = convert_raw_to_dict(raw_input)
-    output_to_csv(emails_dict, get_output_name(target_dir))
+    output_to_csv(emails_dict, get_output_name())
 
     eof()
 
 
-def get_target_dir():
+def set_working_dir():
     """
     Changes working directory & returns subdirectory "files";
     Explicit subdirectory used to avoid char conflicts between envs
-    :return: String containing file explicit subdirectory
     """
 
-    target_dir = None
+    if name == "nt":
+        target_dir = getcwd() + "\\files\\"
+    else:  # assume unix
+        target_dir = getcwd() + "/files/"
+
+    if not path.isdir(target_dir):
+        makedirs(target_dir)
+
     try:
-        match name:
-            case "nt":
-                target_dir = getcwd() + "\\files\\"
-            case "posix":
-                target_dir = getcwd() + "/files/"
-
-        if not path.isdir(target_dir):
-            makedirs(target_dir)
         chdir(target_dir)
-
     except FileNotFoundError:
-        exit("Error accessing \"files\" folder.")
-
-    return target_dir
+        raise FileNotFoundError("Error accessing \"files\" folder in " + getcwd())
 
 
 def read_txt(inbound_name):
@@ -62,28 +56,27 @@ def read_txt(inbound_name):
     """
 
     try:
-        with open(inbound_name) as inbound_file:
+        with open(inbound_name, 'r') as inbound_file:
             lines = inbound_file.readlines()
         inbound_file.close()
     except FileNotFoundError:
-        exit("Invalid request for file_name \"" + inbound_name + "\" at \"" + getcwd() + "\"")
+        raise FileNotFoundError("Failed to locate \"" + inbound_name + "\" at \"" + getcwd() + "\"")
 
     return lines
 
 
-def get_input_name(target_dir):
+def get_input_name():
     """
     Cli prompt for inbound data file name
-    :param target_dir: Explicit working directory as a String
     :return: Input file name as a String
     """
     input_name = input("Input file name: ").strip()
 
-    if path.exists(target_dir + input_name):
+    if path.exists(input_name):
         return input_name
     else:
         print("File does not exist!")
-        return get_input_name(target_dir)
+        return get_input_name()
 
 
 def convert_raw_to_dict(raw_input):
@@ -107,12 +100,11 @@ def convert_raw_to_dict(raw_input):
                 pass
 
         elif timestamp_dt is None:  # seek time
-            try:  # verify the timestamp has not been skipped
-                test = search(r".*From: (.*)", line)
-                if test is not None:
-                    exit(sender + " does not have a succeeding timestamp;" +
-                                  " log convention is as follows " +
-                                  "\"X-DSPAM-Processed: Sun Jan  1 12:00:00 1999\"")
+            try:  # raise warning & reset search if timestamp is skipped
+                if search(r".*From: (.*)", line) is not None:
+                    warn(sender + " does not have a succeeding timestamp; log convention is as follows " +
+                         "\"X-DSPAM-Processed: Sun Jan  1 12:00:00 1999\"")
+                    sender = None  #
             except AttributeError:
                 pass
 
@@ -126,14 +118,14 @@ def convert_raw_to_dict(raw_input):
                 pass
 
         else:  # seek confidence
-            try:  # verify the confidence has not been skipped
-                test = search(r".*From: (.*)", line)
-                if test is None:
-                    test = search(r".*X-DSPAM-Processed: (.*)", line)
-                if test is not None:
-                    exit(sender + " does not have a succeeding confidence;" +
-                                  " log convention is as follows " +
-                                  "\"X-DSPAM-Confidence: 0.9999\"")
+            try:  # raise warning & reset search if confidence is skipped
+                if (search(r".*From: (.*)", line) is not None
+                        or search(r".*X-DSPAM-Processed: (.*)", line) is not None):
+                    warn(sender + " does not have a succeeding confidence;" +
+                                     " log convention is as follows " +
+                                     "\"X-DSPAM-Confidence: 0.9999\"")
+                    sender = None
+                    timestamp_dt = None
             except AttributeError:
                 pass
 
@@ -175,9 +167,14 @@ def convert_list_to_datetime(timestamp):
         second = int(time[2])
 
         year = int(timestamp[3])
-    except IndexError and ValueError:
-        exit(str(timestamp) +
-             " does not follow log convention of \"[\"Sun\", \"Jan\", \"1\", \"12:00:00\", \"1999\"]\"")
+    except IndexError:
+        raise IndexError(str(timestamp) +
+                         " does not contain enough space-separated values that follow the log convention of "
+                         "\"[\"Sun\", \"Jan\", \"1\", \"12:00:00\", \"1999\"]\"")
+    except ValueError:
+        raise ValueError(str(timestamp) +
+                         " does not contain numeric values that follow the log convention of "
+                         "\"[\"Sun\", \"Jan\", \"1\", \"12:00:00\", \"1999\"]\"")
 
     return datetime(year, month, day, hour, minute, second)
 
@@ -200,10 +197,9 @@ def output_to_csv(emails_dict, outbound_name):
         outbound_file.close()
 
 
-def get_output_name(target_dir):
+def get_output_name():
     """
     Cli prompt for outbound data file name
-    :param target_dir: Explicit working directory as a String
     :return: Output file name as a String
     """
 
@@ -211,17 +207,17 @@ def get_output_name(target_dir):
 
     if has_illegal_chars(output_name) or name_too_long(output_name):
         print("\"" + output_name + "\" does not follow OS naming conventions; please try again.")
-        return get_output_name(target_dir)
+        return get_output_name()
 
-    elif path.exists(target_dir + output_name):
+    elif path.exists(output_name):
         choice = input("Overwrite existing file (y/n): ").strip().casefold()
         while choice not in ['y', 'n']:  # validate input
             choice = input("Enter (y/n): ").strip().casefold()
 
         if choice == 'n':
-            return get_output_name(target_dir)
+            return get_output_name()
 
-    return target_dir + output_name
+    return output_name
 
 
 def has_illegal_chars(file_name):
