@@ -59,9 +59,10 @@ def read_txt(inbound_name):
     try:
         with open(inbound_name, 'r') as inbound_file:
             lines = inbound_file.readlines()
-        inbound_file.close()
     except FileNotFoundError:
         raise FileNotFoundError("Failed to locate \"" + inbound_name + "\" at \"" + getcwd() + "\"")
+    finally:
+        inbound_file.close()
 
     return lines
 
@@ -89,95 +90,111 @@ def convert_raw_to_dict(raw_input):
 
     emails_dict = []
     sender = None
-    timestamp_dt = None
+    timestamp = None
+    confidence = None
 
     for line in raw_input:
         if sender is None:  # seek sender
-            try:
-                result = search(r".*From: (.*)", line)
-                index = result.start() + len("From: ")
-                sender = line[index:].strip()
-            except AttributeError:
-                pass
+            sender = get_sender(line)
 
-        elif timestamp_dt is None:  # seek time
-            try:  # raise warning & reset search if timestamp is skipped
-                if search(r".*From: (.*)", line) is not None:
-                    warn(sender + " does not have a succeeding timestamp; log convention is as follows " +
-                         "\"X-DSPAM-Processed: Sun Jan  1 12:00:00 1999\"")
-                    sender = None  #
-            except AttributeError:
-                pass
+        elif is_sender_line(line, sender):  # raise warning, overwrite sender
+            sender = get_sender(line)
 
-            try:  # else check for conventional attribute
-                if search(r".*X-DSPAM-Processed: (.*)", line):
-                    timestamp = line.strip().split()
-                    del timestamp[0]  # rm "X-DSPAM-Processed: "
+        elif timestamp is None:   # seek time
+            timestamp = get_timestamp(line)
 
-                    timestamp_dt = convert_list_to_datetime(timestamp)
-            except AttributeError:
-                pass
+        elif is_timestamp_line(line, sender):  # raise warning, reset all vals
+            sender = None
+            timestamp = None
 
         else:  # seek confidence
-            try:  # raise warning & reset search if confidence is skipped
-                if (search(r".*From: (.*)", line) is not None
-                        or search(r".*X-DSPAM-Processed: (.*)", line) is not None):
-                    warn(sender + " does not have a succeeding confidence;" +
-                                     " log convention is as follows " +
-                                     "\"X-DSPAM-Confidence: 0.9999\"")
-                    sender = None
-                    timestamp_dt = None
-            except AttributeError:
-                pass
-
-            try:  # else check for conventional attribute
+            try:
                 if search(r".*X-DSPAM-Confidence: (.*)", line):
                     line = line.split()
                     confidence = float(line[1])
                     emails_dict.append({"Email": sender,
-                                        "Time": timestamp_dt.time(),
+                                        "Time": timestamp.time(),
                                         "Confidence": confidence})
                     sender = None
-                    timestamp_dt = None
+                    timestamp = None
+                    confidence = None
             except AttributeError:
                 pass
 
     return emails_dict
 
 
-def convert_list_to_datetime(timestamp):
+def get_sender(line):
+    try:
+        if search(r".*From: (.*)", line) is not None:
+            return line.split()[1]
+    except AttributeError:
+        pass
+    except IndexError:
+        warn(line + " does not follow convention of \"From: name@email.com\"")
+    return None
+
+
+def get_timestamp(line):
     """
     Cleans a string containing a log file's timestamp
-    :param timestamp: A list of a split() timestamp; e.g. ["Sun", "Jan", "1", "12:00:00", "1999"]"
+    :param line: A string extracted line from log
     :return Datetime object containing the converted timestamp
     """
-
-    months_format = (None, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-
     try:
-        timestamp = timestamp[1:5]  # rm [Sun, ... , superfluous vals]
+        if search(r".*X-DSPAM-Processed: (.*)", line) is not None:
+            timestamp = line.strip().split()
 
-        month = months_format.index(timestamp[0])
+            months_format = (None, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-        day = int(timestamp[1])
+            del timestamp[0]  # rm "X-DSPAM-Processed: "
+            timestamp = timestamp[1:5]  # rm [Sun, ... , superfluous vals]
 
-        time = str(timestamp[2])
-        time = time.split(':')
-        hour = int(time[0])
-        minute = int(time[1])
-        second = int(time[2])
+            month = months_format.index(timestamp[0])
 
-        year = int(timestamp[3])
+            day = int(timestamp[1])
+
+            time = str(timestamp[2])
+            time = time.split(':')
+            hour = int(time[0])
+            minute = int(time[1])
+            second = int(time[2])
+
+            year = int(timestamp[3])
+
+            return datetime(year, month, day, hour, minute, second)
+    except AttributeError:
+        pass
     except IndexError:
-        raise IndexError(str(timestamp) +
+        raise IndexError(str(line) +
                          " does not contain enough space-separated values that follow the log convention of "
                          "\"[\"Sun\", \"Jan\", \"1\", \"12:00:00\", \"1999\"]\"")
     except ValueError:
-        raise ValueError(str(timestamp) +
+        raise ValueError(str(line) +
                          " does not contain numeric values that follow the log convention of "
                          "\"[\"Sun\", \"Jan\", \"1\", \"12:00:00\", \"1999\"]\"")
+    return None
 
-    return datetime(year, month, day, hour, minute, second)
+
+def is_sender_line(line, sender):
+    try:
+        if search(r".*From: (.*)", line) is not None:
+            warn(sender + " failed to seek succeeding timestamp value; log convention is as follows " +
+                 "\"X-DSPAM-Processed: Sun Jan  1 12:00:00 1999\"")
+            return True
+    except AttributeError:
+        return False
+
+
+def is_timestamp_line(line, sender):
+    try:  # raise warning & reset search if confidence is skipped
+        if search(r".*X-DSPAM-Processed: (.*)", line) is not None:
+            warn(sender + " does not have a succeeding confidence value; log convention is as follows " +
+                 "\"X-DSPAM-Confidence: 0.9999\"")
+            return True
+    except AttributeError:
+        pass
+    return False
 
 
 def output_to_csv(emails_dict, outbound_name):
@@ -195,7 +212,6 @@ def output_to_csv(emails_dict, outbound_name):
         writer.writeheader()
         writer.writerows(emails_dict)
         writer.writerow({"Time": "Average", "Confidence": get_average(emails_dict)})
-        outbound_file.close()
 
 
 def get_output_name():
