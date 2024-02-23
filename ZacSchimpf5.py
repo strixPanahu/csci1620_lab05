@@ -6,7 +6,6 @@
 
     https://github.com/strixPanahu/csci1620_lab05
 """
-
 from csv import DictWriter
 from datetime import datetime
 from os import chdir, getcwd, makedirs, name, path
@@ -19,7 +18,6 @@ def main():
     Primary logic flow; cli-callable function
     :return: None
     """
-
     set_working_dir()
 
     raw_input = read_txt(get_input_name())
@@ -34,7 +32,6 @@ def set_working_dir():
     Changes working directory & returns subdirectory "files";
     Explicit subdirectory used to avoid char conflicts between envs
     """
-
     if name == "nt":
         target_dir = getcwd() + "\\files\\"
     else:  # assume unix
@@ -55,7 +52,6 @@ def read_txt(inbound_name):
     :param inbound_name String of file path
     :return: A list[] containing each newline separated string
     """
-
     try:
         with open(inbound_name, 'r') as inbound_file:
             lines = inbound_file.readlines()
@@ -87,7 +83,6 @@ def convert_raw_to_dict(raw_input):
     :param raw_input A list[] of the input file's lines
     :return [{Email: , Time: , Confidence: }, {etc: }]
     """
-
     emails_dict = []
     sender = None
     timestamp = None
@@ -125,6 +120,11 @@ def convert_raw_to_dict(raw_input):
 
 
 def get_sender(line):
+    """
+    Cleans a string containing a log file's timestamp
+    :param line: A string extracted line from log
+    :return Datetime object containing the converted timestamp
+    """
     try:
         if search(r".*From: (.*)", line) is not None:
             return line.split()[1]
@@ -177,6 +177,12 @@ def get_timestamp(line):
 
 
 def is_sender_line(line, sender):
+    """
+    Validate log line is not a From line
+    :param line: Stripped() line of a log
+    :param sender: Associated email
+    :return: True if includes From:
+    """
     try:
         if search(r".*From: (.*)", line) is not None:
             warn(sender + " failed to seek succeeding timestamp value; log convention is as follows " +
@@ -187,6 +193,12 @@ def is_sender_line(line, sender):
 
 
 def is_timestamp_line(line, sender):
+    """
+    Validate log line is not a timestamp
+    :param line: Stripped() line of a log
+    :param sender: Associated email
+    :return: True if includes X-DSPAM-Confidence:
+    """
     try:  # raise warning & reset search if confidence is skipped
         if search(r".*X-DSPAM-Processed: (.*)", line) is not None:
             warn(sender + " does not have a succeeding confidence value; log convention is as follows " +
@@ -204,7 +216,6 @@ def output_to_csv(emails_dict, outbound_name):
     :param outbound_name The filename of the .csv to be saved to
     :return None
     """
-
     header = list(emails_dict[0].keys())
 
     with open(outbound_name, 'w', newline='') as outbound_file:
@@ -219,7 +230,6 @@ def get_output_name():
     Cli prompt for outbound data file name
     :return: Output file name as a String
     """
-
     output_name = input("Output file name: ")
 
     if has_illegal_chars(output_name) or name_too_long(output_name):
@@ -257,7 +267,6 @@ def name_too_long(file_name):
     :param file_name: File name as a String
     :return: True if file name is in fact, too long
     """
-
     if len(file_name) > 255:
         return True
     else:
@@ -265,6 +274,11 @@ def name_too_long(file_name):
 
 
 def get_average(emails_dict):
+    """
+    Calculate average confidence
+    :param emails_dict: [{Email: , Time: , Confidence: }, {etc: }]
+    :return: Average value
+    """
     total = 0
     for message in emails_dict:
         total += message.get("Confidence")
