@@ -20,7 +20,7 @@ def main():
     """
     set_working_dir()
 
-    raw_input = read_txt(get_input_name())
+    raw_input = read_txt()
     emails_dict = convert_raw_to_dict(raw_input)
     output_to_csv(emails_dict, get_output_name())
 
@@ -46,19 +46,19 @@ def set_working_dir():
         raise FileNotFoundError("Error accessing \"files\" folder in " + getcwd())
 
 
-def read_txt(inbound_name):
+def read_txt():
     """
     Reads working directory "input.txt"
-    :param inbound_name String of file path
     :return: A list[] containing each newline separated string
     """
     try:
+        inbound_name = get_input_name()
+
         with open(inbound_name, 'r') as inbound_file:
             lines = inbound_file.readlines()
     except FileNotFoundError:
-        raise FileNotFoundError("Failed to locate \"" + inbound_name + "\" at \"" + getcwd() + "\"")
-    finally:
-        inbound_file.close()
+        print("File does not exist!")
+        lines = read_txt()
 
     return lines
 
@@ -69,12 +69,7 @@ def get_input_name():
     :return: Input file name as a String
     """
     input_name = input("Input file name: ").strip()
-
-    if path.exists(input_name):
-        return input_name
-    else:
-        print("File does not exist!")
-        return get_input_name()
+    return input_name
 
 
 def convert_raw_to_dict(raw_input):
@@ -230,7 +225,7 @@ def get_output_name():
     Cli prompt for outbound data file name
     :return: Output file name as a String
     """
-    output_name = input("Output file name: ")
+    output_name = input("Output file name: ").strip()
 
     if has_illegal_chars(output_name) or name_too_long(output_name):
         print("\"" + output_name + "\" does not follow OS naming conventions; please try again.")

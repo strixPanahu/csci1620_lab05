@@ -111,3 +111,24 @@ folder so this is the first time it’s being created.
 > Data stored!  
 
 * NOTE: The assumption in this scenario is that you already had a file named output.csv in your files folder and are choosing to send your data to a new csv file named test.csv because you don’t want to overwrite your output.csv file.
+
+
+## Feedback 2/24:
+
+- [x] 14.) Your code is supposed to find input.txt in the files folder e.g., open(‘files/’ + filename, ‘r’)
+  * Complete; see set_working dir(), lines 30-46. The files directory is set for all files, both input & output, by changing Python's active directory based on the detected OS. 
+	
+- [x] 15.) Use a try except block to determine missing input files (not the os module)
+  * Complete; see read_txt(), lines 49-73. The script has been converted to throw an exception rather than raise a warning. 
+
+- [x] 16.) You should continually ask the user for the input file name until a correct file name is entered
+  * Complete; see read_txt(), lines 60. The script returns a recursion of itself upon exception.
+
+- [x] 17.) Your code is supposed to store output.csv in the files folder e.g., open(‘files/’ + filename, ‘w’) 
+  * Complete; see set_working dir(), line 30-46. The files directory is set for all files, both input & output, by changing Python's active directory based on the detected OS. 
+
+- [x] 18.) Strip string input when getting the file name
+  * Complete; see get_output_name(), line 229. The user input has been stripped for the output file name variable. 
+
+- [x] 19.) Restrip input when getting the new output file name
+  * Complete; see get_output_name(), lines 241. The script returns a recursion of itself upon overwrite negation.
